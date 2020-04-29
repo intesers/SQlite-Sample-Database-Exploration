@@ -42,4 +42,32 @@ The database can be found [here](http://www.sqlitetutorial.net/sqlite-sample-dat
     JOIN employees ON employees.EmployeeId = customers.SupportRepId
     JOIN invoices ON invoices.CustomerId = customers.CustomerId
     GROUP BY customers.SupportRepId;
+    
+## Intermediate Challenge
+
+**5. Do longer or shorter length albums tend to generate more revenue?**
+
+    WITH song_sales AS (SELECT invoice_items.TrackId, SUM(invoice_items.UnitPrice) 'revenue'
+    FROM invoice_items 
+    GROUP BY invoice_items.TrackId)
+    
+    SELECT albums.Title, SUM(tracks.Milliseconds)/1000/60 'Album Length', SUM(song_sales.revenue) 'Total Revenue'
+    FROM albums
+    JOIN tracks ON albums.AlbumId = tracks.AlbumId
+    JOIN song_sales ON tracks.TrackId = song_sales.TrackId
+    GROUP BY albums.Title
+    ORDER BY SUM(song_sales.revenue) DESC;
+
+**6. Is the number of times a track appear in any playlist a good indicator of sales?**
+
+    WITH sales AS (SELECT invoice_items.TrackId, SUM(invoice_items.UnitPrice) 'Revenue'
+    FROM invoice_items
+    GROUP BY invoice_items.TrackId)
+
+    SELECT playlist_track.TrackId, COUNT(playlist_track.TrackId) 'Number of Appearance in Playlists', SUM(sales.Revenue) 'Total Sales'
+    FROM playlist_track
+    JOIN sales ON playlist_track.TrackId = sales.TrackId
+    GROUP BY playlist_track.TrackId
+    ORDER BY SUM(sales.Revenue) DESC;
+    
 
