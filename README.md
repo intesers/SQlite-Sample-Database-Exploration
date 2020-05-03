@@ -70,4 +70,20 @@ The database can be found [here](http://www.sqlitetutorial.net/sqlite-sample-dat
     GROUP BY playlist_track.TrackId
     ORDER BY SUM(sales.Revenue) DESC;
     
+ ## Advanced Challenge
+
+**7. How much revenue is generated each year, and what is its [percent change from the previous year?**
+
+    WITH prevYear AS (SELECT CAST(strftime('%Y', invoices.InvoiceDate) AS INT) 'PreviousYear', SUM(invoices.Total) 'PrevYearRevenue'
+    FROM invoices
+    GROUP BY CAST(strftime('%Y', invoices.InvoiceDate) AS INT)),
+    currentYear AS (SELECT CAST(strftime('%Y', invoices.InvoiceDate) AS INT) 'CurrentYear', SUM(invoices.Total) 'CurrentYearRevenue'
+    FROM invoices
+    GROUP BY CAST(strftime('%Y', invoices.InvoiceDate) AS INT))
+    
+    SELECT currentYear.CurrentYear, currentYear.CurrentYearRevenue, ROUND((CurrentYearRevenue - PrevYearRevenue)/PrevYearRevenue * 100, 2) 'Percent Change'
+    FROM currentYear
+    JOIN prevYear ON currentYear.CurrentYear = prevYear.PreviousYear + 1;
+   
+    
 
