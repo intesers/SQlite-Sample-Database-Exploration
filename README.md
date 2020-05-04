@@ -86,4 +86,13 @@ The database can be found [here](http://www.sqlitetutorial.net/sqlite-sample-dat
     JOIN prevYear ON currentYear.CurrentYear = prevYear.PreviousYear + 1;
    
     
+Alternative and easier version that I late figured out,
+
+    SELECT 
+      CAST(strftime('%Y', InvoiceDate) AS INT) Year, 
+      SUM(Total) "Total Revenue",
+      LAG(SUM(Total)) OVER() 'previous value', /*The lag fucnction returns the previous value of a row in a column*/
+      ROUND((SUM(Total) - LAG(SUM(Total)) OVER())/LAG(SUM(Total)) OVER() * 100, 2) 'percentage change'
+    FROM invoices
+    GROUP BY Year;
 
